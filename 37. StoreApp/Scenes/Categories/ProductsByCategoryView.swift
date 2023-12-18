@@ -1,16 +1,18 @@
 //
-//  MainView.swift
+//  ProductsByCategoryView.swift
 //  37. StoreApp
 //
-//  Created by Sesili Tsikaridze on 18.12.23.
+//  Created by Sesili Tsikaridze on 19.12.23.
 //
 
 import SwiftUI
 
-struct MainView: View {
+struct ProductsByCategoryView: View {
     
     //MARK: - Properties
     @EnvironmentObject var viewModel: MainViewModel
+    
+    let category: String
     
     private let columns = [
         GridItem(.flexible()),
@@ -23,11 +25,8 @@ struct MainView: View {
             Color(hex: "F4F4F4")
                 .ignoresSafeArea()
             
-            VStack(alignment: .leading,spacing: 20) {
-                HeaderComponentView(headerText: "don't miss our deals", secondaryText: "SHOP NOW")
-                Text("BALANCE: \(viewModel.balance) $")
-                    .font(.system(size: 12, weight: .light))
-                    .padding(.bottom, -20)
+            VStack(spacing: 30) {
+                HeaderComponentView(headerText: "shop by category", secondaryText: category)
                 productsGrid
                 FooterComponentView(cartQuantity: viewModel.totalCartQuantity, totalPrice: viewModel.totalCartPrice)
             }
@@ -41,8 +40,13 @@ struct MainView: View {
     private var productsGrid: some View {
         ScrollView {
             LazyVGrid(columns: columns) {
-                ForEach(viewModel.products) { product in
-                    productSetup(product)
+                ForEach(viewModel.products.filter { $0.category == category }) { product in
+                    NavigationLink(value: product) {
+                        productSetup(product)
+                    }
+                    .navigationDestination(for: Product.self) { product in
+                        ProductDetailsView( product: product)
+                    }
                 }
             }
         }
@@ -62,7 +66,8 @@ struct MainView: View {
     }
 }
 
+
 #Preview {
-    MainView()
+    ProductsByCategoryView( category: "fragrances")
         .environmentObject(MainViewModel())
 }

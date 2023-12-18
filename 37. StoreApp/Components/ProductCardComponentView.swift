@@ -37,23 +37,11 @@ struct ProductCardComponentView: View {
     
     // MARK: - Product Image
     private var productImageView: some View {
-        AsyncImage(url: URL(string: thumbnailImage)) { phase in
-            switch phase {
-            case .success(let image):
-                image
-                    .resizable()
-                    .scaledToFill()
-                    .frame( width: 140, height: 100, alignment: .leading)
-                    .clipShape(RoundedRectangle(cornerRadius: 15))
-                    .clipped()
-            case .failure:
-                Text("Image not found")
-            case .empty:
-                Text("Loading...")
-            @unknown default:
-                Text("Loading...")
-            }
-        }
+        ImageFromURL(imageString: thumbnailImage)
+            .frame(width: 140, height: 100)
+            .clipShape(RoundedRectangle(cornerRadius: 15))
+            .clipped()
+
         .overlay(alignment: .topTrailing) {
             ratingLabel
                 .padding(5)
@@ -95,7 +83,7 @@ struct ProductCardComponentView: View {
         .clipShape(RoundedRectangle(cornerRadius: 50))
         .overlay(
             RoundedRectangle(cornerRadius: 50)
-                .stroke(.black, lineWidth: 1)
+                .stroke(.gray, lineWidth: 1)
         )
     }
     
@@ -130,7 +118,7 @@ struct ProductCardComponentView: View {
             .tint(.white)
             .frame(width: 12, height: 12)
             .clipped()
-            .alert(isPresented: $viewModel.showAlert) {
+            .alert(isPresented: $viewModel.stockAlert) {
                 Alert(title: Text("out of Stock"), message: Text("Product is out of stock"), dismissButton: .default(Text("OK")))
             }
         }
